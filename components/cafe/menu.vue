@@ -1,0 +1,585 @@
+<template>
+  <div :dir="$dir()">
+    <login :loginModalActive="checkoutLoginActive" @close="checkoutLoginActive = false" @successful="resumeCheckout" />
+    <v-tour
+      name="menuTour"
+      :steps="steps"
+      :options="myOptions"
+      :callbacks="myCallbacks"
+    ></v-tour>
+
+    <div id="selected-products-preview" 
+    class="selected-products-preview-is-shown"
+    v-if="tokenType !== 'menu-only' && !isPaymentOnly && (!user.table_uuid || (user.table_uuid && !ordersPaid))">
+      <span v-if="!isClosed && !tour">{{ordersTotalCount}}</span>
+      <b-button
+        @click="submitOrders"
+        :loading="globalLoading"
+        class="button shadow-md bcp-btn cp-btn-submit-order shadow-lg-bb"
+        size="is-medium"
+        :type="(isClosed) ? 'is-dark' : 'is-info'"
+        :disabled="tour || (cafe.guestBrowsing && !ordersTotalCount)"
+        >
+        {{ (!isClosed) ? ((tokenType == 'pre-order' || tokenType == 'delivery') ? 'رفتن به مرحله‌ی بعد' : $t('menu_page.submit_order')) : $t('menu_page.cafe_is_closed') }}
+        <span v-if="tokenType == 'pre-order' && !isDelivery(cafe)" dir="rtl" class="font-bold font-14">({{ $t('menu_page.submit_order_self_pickup') }})</span>
+        </b-button
+      >
+    </div>
+
+    <div :class="{'cp-l-margin-inverted': ($dir() == 'rtl'), 'cp-r-margin-inverted': ($dir() == 'ltr')}" class="category-list" id="menu-category-list" ref="menuCategoryList">
+      <div
+        class="category-item-wrapper"
+        v-for="(cat, index) in menu"
+        :key="cat.pk"
+        :id="'menu-category-item-' + index"
+        
+      >
+        <div
+          v-if="cat.products.length > 0"
+          class="category-item"
+          :class="{
+            'active-category': index == activeCategory,
+            'current-order-category': index == 0,
+            'shadow-lg': index == 0
+          }"
+          @click="changeActiveCategoryButtonClick(index)"
+        >
+          {{ index == 0 ? $t("menu_page.your_current_order") : cat.name }}
+        </div>
+      </div>
+    </div>
+    <!-- <transition-group :name="slideTransition" tag="div" class=""> -->
+      <div dir="ltr" id="menu-swiper-container"
+    v-if="this.menuTabItemCategories && this.menuTabItemCategories.length > 0 && this.showSwipableMenu"
+    >
+      <swiper dir="ltr" ref="menuCategoriesSwipe"
+      @slide-change-end="handleSlideChange"
+      @slider-move="handleSlideMove">
+        <div :dir="$dir()" v-for="cat in menuTabItemCategories"
+          :key="cat.name" class="product-list-wrapper">
+          <div :key="cat.pk" class="product-list" v-if="isItemVisible(cat)">
+            <div
+              v-for="(prod, index) in cat.products"
+              :key="prod.pk"
+              class="normal-radius shadow-md has-background-white cp-tb-margin  product-item" 
+              :class="{'cp-l-margin-half': ($dir() == 'rtl'), 'cp-r-margin-half': ($dir() == 'ltr')}"
+            >
+            
+              <!-- on div below we need to add @click="$store.commit('cafe/setCurrentProduct', prod)" later for product page navigation -->
+              <div class="img-section">
+                <img
+                  :src="
+                    prod.avatar == null
+                      ? productDefaultImage
+                      : mediaUrl + prod.avatar
+                  "
+                  alt
+                />
+              </div>
+              <div class="content-section cp-side-padding cp-tb-padding">
+                <div class="product-title font-norm">{{ prod.name }}</div>
+                <div class="product-description">{{ prod.description }}</div>
+                <div class="product-price" dir="rtl">
+                  <div v-if="prod.discount > 0" class="product-discount">
+                    <span>{{ prod.discount }}%</span>
+                    <p>
+                      {{ prod.original_price | currency }}
+                    </p>
+                  </div>
+                  {{ prod.price | currency }}
+                  <!-- <span class="toman">تومان</span> -->
+                </div>
+              </div>
+              <div v-if="prod.available && tokenType !== 'menu-only' && !isPaymentOnly && !isClosed && (!user.table_uuid || (user.table_uuid && !ordersPaid))" class="add-or-remove">
+                <span class="product-add" @click="countChange(index, 1, prod, cat)">
+                  <div class="aor-shape">+</div>
+                </span>
+                <span class="product-count">{{ prod.count }}</span>
+                <span class="product-remove" @click="countChange(index, -1, prod, cat)">
+                  <div class="aor-shape">-</div>
+                </span>
+              </div>
+              <div v-if="!prod.available" class="out-of-order">
+                <p>{{ $t('menu_page.sold_out') }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </swiper>
+    </div>
+    <!-- </transition-group> -->
+  </div>
+</template>
+
+<script>
+import { Order } from '~/middleware/models/cafe.js'
+import productDefaultImage from '@/assets/img/product-default.png'
+import Vue from 'vue'
+import {Swiper} from 'vue2-swiper'
+import login from '~/components/user/login.vue'
+export default {
+  components: {
+    Swiper, login
+  },
+  props: [
+    'menu',
+    'active'
+  ],
+  data() {
+    return {
+      checkoutLoginActive: false,
+      sliderMoving: false,
+      showSwipableMenu: true,
+      lastSwipeOffset: null,
+      skeletunMenu: 3,
+      key: 'value',
+      lastActiveCategory: 1,
+      activeCategory: 1,
+      count: 0,
+      totalPrice: 0,
+      orderList: [],
+      tour: false,
+      productDefaultImage,
+      // slideTransition: 'slide-category-next',
+      myOptions: {
+        highlight: true,
+        useKeyboardNavigation: false,
+        labels: {
+          buttonSkip: false,
+          buttonPrevious: this.$t('menu_page.tour.previous'),
+          buttonNext: this.$t('menu_page.tour.how_can_i_pay'),
+          buttonStop: this.$t('menu_page.tour.got_it')
+        }
+      },
+      myCallbacks: {
+        // onNextStep: this.sliderAnimate,
+        onFinish: () => {
+          this.tour = false
+          this.$store.commit('setGuide', {name: 'changeOrderConfirm', data: false})
+          localStorage.setItem('changeOrderGuide', false)
+        }
+      },
+      steps: [
+        {
+          target: '#selected-products-preview', // We're using document.querySelector() under the hood
+          content: this.$t('menu_page.tour.change_order_guide'),
+            params: {
+            placement: 'top' // Any valid Popper.js placement. See https://popper.js.org/popper-documentation.html#Popper.placements
+          }
+        },
+      
+        // {
+        //   target: '.v-step-1',
+        //   content: 'An awesome plugin made with Vue.js!'
+        // },
+        // {
+        //   target: '[data-v-step="2"]',
+        //   content: 'Try it, you\'ll love it!<br>You can put HTML in the steps and completely customize the DOM to suit your needs.',
+        //   params: {
+        //     placement: 'top' // Any valid Popper.js placement. See https://popper.js.org/popper-documentation.html#Popper.placements
+        //   }
+        // }
+      ]
+    }
+  },
+  mounted(){
+    this.reRenderSwipable()
+  },
+  methods: {
+    isItemVisible(cat){
+      let index = this.menu.indexOf(cat)
+      if(this.sliderMoving){
+
+        // Item is on the direction we are sliding.
+        let sameSwipeSide =
+          (this.activeCategory - this.lastActiveCategory)
+          * (index - this.lastActiveCategory) >= 0
+
+        // Item might be visible during slide
+        let itemIsInSlideScope =
+          Math.abs(index - this.lastActiveCategory)
+          <= Math.abs(this.activeCategory - this.lastActiveCategory) + 1
+
+        return sameSwipeSide && itemIsInSlideScope
+      } else {
+        return index == this.activeCategory
+      }
+      // return this.sliderMoving || index == this.activeCategory
+    },
+    reRenderSwipable() {
+      this.showSwipableMenu = false;
+      this.$nextTick(() => {
+        if (this._isDestroyed || this._isBeingDestroyed) return
+        this.showSwipableMenu = true
+        this.setActiveTab(true)
+      });
+    },
+    handleSlideMove(offset) {
+      if(!this.sliderMoving){
+        this.sliderMoving = true
+        this.lastActiveCategory = this.activeCategory
+
+        // TODO: after analytics test, remove one of these
+        this.$gtm.trackEvent({
+          event: 'menu-change-cat-by-swipe',
+          category: 'menu',
+          value: 'swipe',
+        })
+        this.$gtm.trackEvent({
+          event: 'menu-change-cat',
+          category: 'menu',
+          value: 'swipe',
+        })
+      }
+      if(!this.lastSwipeOffset){
+        this.lastSwipeOffset = offset
+        return
+      }
+      let width = document.getElementById('menu-swiper-container').offsetWidth;
+      // console.log(offset);
+      // console.log(width);
+      // console.log(offset / width);
+      // console.log('dir');
+      let goingRight = offset - this.lastSwipeOffset < 0
+      let pageIndex = (goingRight ? Math.ceil((-offset) / width) : Math.floor((-offset) / width))
+      if(pageIndex >= this.menuTabItemCategories.length) {
+        pageIndex = this.menuTabItemCategories.length - 1
+      }
+      if(pageIndex < 0) {
+        pageIndex = 0
+      }
+      // Carefull! pageIndex is different from page
+      let pk = this.menuTabItemCategories[pageIndex].pk
+      let newActiveCategory = this.menu.findIndex(cat => cat.pk == pk)
+      if(this.activeCategory != newActiveCategory){
+        this.activeCategory = newActiveCategory;
+      }
+      this.lastSwipeOffset = offset
+    },
+    handleSlideChange(page){
+      this.sliderMoving = false;
+      this.lastSwipeOffset = null;
+
+      let pageIndex = page - 1;
+      let pk = this.menuTabItemCategories[pageIndex].pk
+      this.activeCategory = this.menu.findIndex(cat => cat.pk == pk)
+    },
+    setActiveTab(noAnimation) {
+      this.$nextTick(() => {
+        if (this._isDestroyed || this._isBeingDestroyed) return
+        if (!this.menu.length) return
+        const active = this.menu[this.activeCategory]
+        if (!active || !active.products.length) {
+          const all = this.menu.findIndex(category => category.localType === 'ALL' && category.products.length)
+          const next = all >= 0 ? all : this.menu.findIndex(category => category.products.length)
+          if (next < 0) return
+          this.activeCategory = next
+        }
+        const category = this.menu[this.activeCategory]
+        const swiper = this.$refs.menuCategoriesSwipe
+        if (!category || !swiper) return
+        const index = this.menuTabItemCategories.findIndex(item => item.pk === category.pk)
+        if (index < 0) return
+        if (!noAnimation) this.sliderMoving = true
+        swiper.setPage(index + 1, noAnimation)
+      })
+    },
+    handleSubmitOrders() {
+      this.productsPayloadSeperator()
+        .then(submitted => { if (submitted) this.$nuxt.$emit('closeNavigationModal') })
+        .catch(() => {})
+    },
+    resumeCheckout() {
+      this.checkoutLoginActive = false
+      return this.productsPayloadSeperator().catch(() => {})
+    },
+    submitOrders() {
+      return this.productsPayloadSeperator().catch(() => {})
+    },
+    productsPayloadSeperator() {
+      if (this.orderSubmission) return this.orderSubmission
+      const changes = this.productChangeArray.filter(item => item.count !== 0)
+      if (!changes.length) {
+        this.$store.commit('changeNavigation', 'cp-table')
+        return Promise.resolve(true)
+      }
+      if (this.cafe && this.cafe.guestBrowsing && !this.userIsloggedIn) {
+        this.checkoutLoginActive = true
+        return Promise.resolve(false)
+      }
+      const add = changes.filter(item => item.count > 0)
+        .map(item => ({ product: item.product, count: item.count }))
+      const del = changes.filter(item => item.count < 0)
+        .map(item => ({ product: item.product, count: -item.count }))
+      const submit = () => this.$store.dispatch('table/changeProductsOnTable', { add, del })
+      const submission = this.cafe && this.cafe.guestBrowsing
+        ? this.$store.dispatch('resolveGuestTable').then(submit) : submit()
+      this.orderSubmission = submission
+        .then(result => {
+          if (this.searchExpandActive) this.toggleSearchBox()
+          return result
+        })
+        .finally(() => { this.orderSubmission = null })
+      return this.orderSubmission
+    },
+    changeActiveCategoryButtonClick(index) {
+
+      // TODO: after analytics test, remove one of these
+      this.$gtm.trackEvent({
+        event: 'menu-change-cat-by-button',
+        category: 'menu',
+        value: 'button',
+      })
+      this.$gtm.trackEvent({
+        event: 'menu-change-cat',
+        category: 'menu',
+        value: 'button',
+      })
+      this.changeActiveCategory(index)
+    },
+    changeActiveCategory(index) {
+      // if (this.activeCategory > index)
+      //   this.slideTransition = 'slide-category-prev'
+      // else this.slideTransition = 'slide-category-next'
+      this.lastActiveCategory = this.activeCategory;
+      this.activeCategory = index
+      this.setActiveTab()
+    },
+
+    countChange(index, count, product, cat) {
+
+      // TODO: after analytics test, remove one of these
+      this.$gtm.trackEvent({
+        event: 'product-' + (count > 0 ? 'add' : 'remove')
+            + '-from-cat-type-' + cat.localType,
+        category: 'order',
+        value: cat.localType,
+      })
+      this.$gtm.trackEvent({
+        event: 'product-count-change',
+        type: (count > 0 ? 'add' : 'remove'),
+        category: 'order',
+        value: cat.localType,
+      })
+
+      
+      // check for 0 count and deletion
+      if (product.count == 0 && count == -1) return
+      if (
+        product.count + count <
+        product.reduceLimit
+      ) {
+        this.toaster(
+          this.$t('menu_page.toasts.you_payed_on_this_product', {num: product.reduceLimit}),
+          'is-danger',
+          'is-bottom'
+        )
+        return
+      }
+      const preview = document.getElementById('selected-products-preview')
+      if (preview) {
+        preview.classList.add('add-order-animation')
+        setTimeout(() => preview.classList.remove('add-order-animation'), 350)
+      }
+      // change number of product count locally on menu data (cafe.js model and store)
+      this.$store.commit('cafe/changeCount', {
+        productIndex: index,
+        categoryIndex: this.activeCategory,
+        count
+      })
+      // initial Change order Tour
+      if (this.guides.changeOrderConfirm && this.userHasOrder > 0) {
+        this.$tours['menuTour'].start()
+        this.tour = true
+      }
+
+      // detect change
+      this.$store.commit('cafe/changeDetection', {
+        id: product.pk,
+        count,
+        price: product.price
+      })
+
+      // changing property of one item of array dosent trigger v-for update
+      // it also dosent effect the compution of computed property therefore
+      // we need a mix of watch and inial array + FORCEUPDATE
+      this.$forceUpdate()
+
+      // total count of anything user wants to add to table (show in add to table btn)
+
+      // total Price of anything user wants to add to table (show in add to table btn)
+      // end of else
+    },
+
+    /**
+     * https://codepen.io/Jayesh_v/pen/oMgwRO
+     * scrollTo - Horizontal Scrolling
+     * @param {(HTMLElement ref)} element - Scroll Container
+     * @param {number} scrollPixels - pixel to scroll
+     * @param {number} duration -  Duration of scrolling animation in millisec
+     */
+    scrollTo(element, scrollPixels, duration) {
+      const scrollPos = element.scrollLeft;
+      // Condition to check if scrolling is required
+      // if ( !( (scrollPos === 0 || scrollPixels > 0) && (element.clientWidth + scrollPos === element.scrollWidth || scrollPixels < 0))) 
+      // {
+        // Get the start timestamp
+        const startTime =
+          "now" in window.performance
+            ? performance.now()
+            : new Date().getTime();
+        
+        function scroll(timestamp) {
+          //Calculate the timeelapsed
+          const timeElapsed = timestamp - startTime;
+          //Calculate progress 
+          const progress = Math.min(timeElapsed / duration, 1);
+          //Set the scrolleft
+          element.scrollLeft = scrollPos + scrollPixels * progress;
+          //Check if elapsed time is less then duration then call the requestAnimation, otherwise exit
+          if (timeElapsed < duration) {
+            //Request for animation
+            window.requestAnimationFrame(scroll);
+          } else {
+            return;
+          }
+        }
+        //Call requestAnimationFrame on scroll function first time
+        window.requestAnimationFrame(scroll);
+      // }
+    },
+    
+    scrollToActiveCategory(){
+      const element = this.$refs.menuCategoryList;
+      if(!(element && element.firstChild && document.getElementById('menu-category-item-' + this.activeCategory))) {
+        return
+      }
+      let startOfScroll = this.$dir() == 'rtl'
+                        ? element.firstChild.getBoundingClientRect().right
+                        : element.firstChild.getBoundingClientRect().left
+      let whereWeWant = this.$dir() == 'rtl'
+                        ? document.getElementById('menu-category-item-' + this.activeCategory)
+                                  .getBoundingClientRect().right + 20
+                        : document.getElementById('menu-category-item-' + this.activeCategory)
+                                  .getBoundingClientRect().left - 20
+      const amount = (whereWeWant - startOfScroll) - element.scrollLeft
+      this.scrollTo(element, amount, 300)
+    }
+  },
+
+  created() {
+    this.$nuxt.$on('changeActiveCategory', this.changeActiveCategory)
+    this.$nuxt.$on('triggerSubmitOrders', this.handleSubmitOrders)
+  },
+  beforeDestroy() {
+    this.$nuxt.$off('changeActiveCategory', this.changeActiveCategory)
+    this.$nuxt.$off('triggerSubmitOrders', this.handleSubmitOrders)
+  },
+
+  computed: {
+    menuTabItemCategories(){
+      let menuFiltered = Object.assign([], this.menu)//.filter(cat => cat.products.length > 0)
+      return this.$dir() == 'rtl' ? menuFiltered.reverse() : menuFiltered
+    },
+    isMenuPage() {
+      return (this.$store.state.currentMainPage == 'currentCafe')
+    },
+    firstTimeActive() {
+      return this.$store.state.firstTimeActive
+    },
+    // initialTour() {
+    //   // it must be the first component and user must be new and page must be table
+    //   return this.showSubmitBtn > 0 && this.isMenuPage  && this.firstTimeActive
+    // },
+    cafe(){
+      return this.$store.state.cafe;
+    },
+    productChangeArray() {
+      return this.$store.state.cafe.productChangeArray
+    },
+
+    ordersTotalCount() {
+      return this.$store.state.cafe.totalCount
+    },
+
+    isClosed() {
+      return this.$store.state.cafe.closed
+    },
+
+    isPaymentOnly() {
+      return this.$store.state.cafe.payment_only
+    },
+
+    totalCap() {
+      return this.$store.state.cafe.productChangeArray.reduce(
+        (sum, prod) => prod.capital + sum,
+        0
+      )
+    },
+
+    // totalCount() {
+    //   return this.$store.state.cafe.productChangeArray.reduce(
+    //     (sum, prod) => prod.count + sum,
+    //     0
+    //   )
+    // },
+    showSubmitBtn() {
+      return this.$store.state.cafe.productChangeArray.length
+    },
+  },
+  watch: {
+    activeCategory(_newValue, oldValue){
+      this.scrollToActiveCategory();
+    },
+    menuTabItemCategories(_newValue, _oldValue){
+      this.reRenderSwipable();
+    },
+    // initialTour: {
+    //   immediate: true,
+    //   handler(val, old) {
+    //     if (val) {
+    //       setTimeout(() => {
+    //         this.$tours['menuTour'].start()
+    //       }, 500)
+    //     }
+    //   }
+    // },
+    // showSubmitBtn(val, old) {
+    //   if (val > 0) {
+    //     document
+    //       .getElementById('selected-products-preview')
+    //       .classList.add('selected-products-preview-is-shown')
+    //   } else {
+    //     this.$store.commit('table/setOrder', { orders: [], totalPrice: 0 })
+    //     document
+    //       .getElementById('selected-products-preview')
+    //       .classList.remove('selected-products-preview-is-shown')
+    //   }
+    // },
+    // ActiveTab(val) {
+    //   if (!val) {
+    //     document
+    //       .getElementById('selected-products-preview')
+    //       .classList.remove('selected-products-preview-is-shown')
+    //   } else {
+    //     document
+    //       .getElementById('selected-products-preview')
+    //       .classList.add('selected-products-preview-is-shown')
+    //   }
+    // },
+    menu: {
+      immediate: true,
+      handler(newValue, oldValue) {
+        if (newValue.length > 0) {
+          const category = this.menu[this.activeCategory] || this.menu[0]
+          this.activeProducts = category ? category.products : []
+          // swipable(this.menu.length ,'product-list', this, 'activeCategory')
+        }
+      }
+    }
+  }
+}
+</script>
+
+<style scoped lang="scss">
+</style>

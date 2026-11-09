@@ -1,0 +1,100 @@
+@import 'variables.sass'
+.cafe-navigator
+  .tabs
+    ul
+      li:first-child 
+        a
+          border: none!important
+          border-radius: 10px 0 0 10px!important
+      li:last-child
+        a
+          border: none!important
+          border-radius: 0 10px 10px 0!important
+      li
+        a
+          border: none!important
+          height: 39px
+          span
+            font-size: 14px
+            font-weight: 500!important
+      .is-active
+        a
+          background-color: $primary
+
+
+.tab-content
+  padding: 0!important
+  // overflow: hidden!important
+  // margin: $margin -$margin
+
+  
+
+.cafe-header
+  position: relative
+  width: 100%
+  height: 140px
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 181, 252, 0.3))
+  background-size: cover
+  // background-color: #0073a0
+  border-radius: 0px 0px 10px 10px
+  &__header
+    position: absolute;
+    height: 140px!important
+    width: 100%!important
+    object-fit: cover
+    left: 0
+    top: 0
+    opacity: 0.7
+    border-radius: 0 0 10px 10px
+    right: 0
+  display: flex
+  &__info
+    position: relative
+    flex: 1
+    img
+      width: 75px
+      height: 75px
+      border-radius: 50px
+    .cafe-name, .cafe-rate
+      position: absolute
+      display: inline-block
+    .cafe-name
+      font-size: 16px
+      font-weight: 500
+      color: white
+    .cafe-rate
+      top: $margin * 3
+      .mdi
+        &:before 
+          font-size: 18px!important
+
+  &__go-back
+    position: relative
+    // flex: 1
+    
+  .current-cafe-top-actions
+    display: flex
+    flex-direction: column
+    .close-icon
+      padding-bottom: 10px
+    .translate-icon
+      padding-top: 10px
+
+  .mdi
+    &:before 
+      font-size: 28px!important
+      
+
+
+.absolute-test
+  position: absolute!important
+  top: 0
+  left: 0
+  right: 0
+
+@media screen and (max-width: 768px)
+  .modal .animation-content 
+    width: 90%
+
+
+    

@@ -1,0 +1,156 @@
+.camera
+  height: 100vh
+  height: 100dvh
+  min-height: 520px
+  position: relative
+  background-color: #2f2f2f
+  // height: 90vh
+  text-align: center
+  z-index: 10
+  & > *
+    position: absolute
+  &__border
+    width: 50%
+    height: 50%
+    border: 3px dashed $primary
+    border-radius: 15px
+    top: 25%
+    left: 25%
+
+#qr-animation
+  top: 8%
+  left: 0
+  right: 0
+  width: 45%
+  max-width: 220px
+  margin: auto
+
+.camera-scan-guide, .enter-code-guide
+  display: flex
+  background-color: white
+  padding: 2*$padding
+  border-radius: 5px
+  align-items: center
+
+.camera-scan-guide
+  margin-bottom: $margin
+  p
+    color: $black
+    font-weight: 500!important
+    // padding: 0.75rem
+    width: 100%
+    text-align: justify
+    // letter-spacing: -0.02rem
+    padding-inline-start: 1.5rem
+
+  img
+    display: flex
+    justify-content: center
+    align-items: center
+    width: 45px
+    height: 45px
+
+.enter-code-guide
+
+  button
+    width: 80%
+    
+
+  div
+    display: flex
+    margin: auto
+    padding-inline-end: 1rem
+    p
+      display: flex
+      justify-content: center
+      align-items: center
+      border-radius: 45px
+      width: 45px
+      height: 45px
+      color: grey
+      font-weight: 500!important
+      background-color: #dcdcdc
+
+.checkCode-btn
+  width: 100%
+
+// .notLogged-landing
+//   padding: 2rem 1rem!important
+
+.landing
+  position: absolute
+  bottom: 5rem
+  left: 0
+  right: 0
+
+  padding: 1rem 1rem
+  padding-top: 3rem
+  border-radius: 1.5rem 1.5rem 0px 0px
+  // background: #f0f0f0
+  // position: relative
+  // bottom: 3rem
+  z-index: 11
+  text-align: center
+  #user-img
+    img
+      width: 75px
+      height: 75px
+      object-fit: cover
+      border-radius: 40px!important
+      border: 3px solid white
+
+  .disable-profile-navigator--noafter
+    filter: saturate(0%)
+    color: lighten($grey, 20%)
+    img
+      opacity: 0.5
+
+  .shortcut-btns
+    margin-inline-start: 0!important
+    margin-inline-end: 0!important
+    padding: 10px 15px
+    text-align: start
+    .has-background-white
+      border-radius: 5px
+      padding: 10px 15px
+      box-shadow: 0px 5px 10px rgba(0,0 ,0 ,0.09 )
+    p
+      font-size: 12px
+      font-weight: 500!important
+    a
+      color: $primary
+    #my-cafe-icon
+      padding-bottom: 4px
+      p
+        position: relative
+        bottom: 4px
+      img
+        width: 30px!important
+        height: 30px
+    #charge-wallet-icon
+      img
+        width: 24px!important
+
+.camera-guide-modal
+  img
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)
+    border-radius: 10px
+
+
+.custom-loading-bg, .custom-loading
+  position: fixed
+  top: 0
+  left: 0
+  right: 0
+  bottom: 0
+.custom-loading-bg
+  z-index: 9999
+  background-color: white
+  opacity: 0.75
+
+.custom-loading
+  z-index: 10000
+
+@media (min-width: 992px)
+  .camera
+    // display: none

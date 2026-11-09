@@ -1,0 +1,6 @@
+# Keep the upstream font files unchanged and exclude them from language totals.
+assets/fontawesome/** linguist-vendored
+assets/fontawesome/webfonts/*.svg -whitespace
+static/fonts/** linguist-vendored
+# Preserve upstream font license text unchanged.
+**/OFL.txt -whitespace

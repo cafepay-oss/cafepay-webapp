@@ -1,0 +1,249 @@
+
+.has-active-table
+  padding-bottom: 100px
+  .table-header
+    text-align: center
+    padding-top: $padding * 1!important
+    margin-bottom: 6*$margin
+
+    &--has-address
+      margin-bottom: 10*$margin!important
+
+    .table-top-section
+      display: flex
+      margin-bottom: $margin
+      div
+        flex: 1
+      &__name
+        width: 100%
+        background-color: white
+        // background-image: linear-gradient( 109.6deg,  rgba(121,203,202,1) 11.2%, rgba(119,161,211,1) 91.1% )
+        // background-image: radial-gradient( circle farthest-corner at 10% 20%,  rgba(234,249,249,0.67) 0.1%, rgba(239,249,251,0.63) 90.1% )
+        // background-image: radial-gradient( circle farthest-corner at 22.4% 21.7%,  rgba(4,189,228,1) 0%, rgba(2,83,185,1) 100.2% )
+        // color: white
+        border-radius: 25px
+        display: inline-block
+        text-align: right
+        padding-right: $padding / 2!important
+        padding-left: 0!important
+        h5
+          display: flex
+          align-items: center
+          // justify-content: center
+          height: 100%
+          font-size: 18px
+          span
+            margin-inline-start: $padding / 2
+            font-size: 18px
+
+      &__edit-orders
+        padding-right: $padding / 2
+        // padding-right: $padding
+        button
+          width: 100%
+          height: 100%
+          span
+            color: $primary!important
+    // display: flex
+
+  .table-status-bar
+    width: 100%
+    // height: 130px
+    margin-top: $margin
+    position: relative
+    top: 2.5rem
+
+    &__delivery-selection
+      background-color: $blueShade
+      height: 50px
+      display: flex
+      border-radius: 5px
+      &--not-selected
+        flex: 1
+      p
+        position: relative
+        img
+          position: absolute
+          width: 32px
+          height: 32px
+
+        img#delivery-selection-img
+          top: 0
+          right: 0
+
+        img#pickup-selection-img
+          top: 0
+          left: 0
+
+
+    &--has-address
+      top: 0rem!important
+
+      #delivery
+        border-radius: 5px
+        background-color: lighten($primaryNotImportant, 50%)
+
+    &__actions
+      margin-bottom: $margin
+      display: flex
+      div
+        flex: 1
+        button
+          width: 100%
+      &__pay-whole-bill
+        padding-left: $padding / 2
+      &__order-description
+        padding-right: $padding / 2
+    // bottom: 19px
+    // display: flex
+    // justify-content: center
+    // align-items: center
+
+    &__info#table-status-bar-progress-wrapper
+      display: flex
+      justify-content: center
+      align-items: center
+      transition: 0.3s
+      border-radius: 5px
+      background-color: $blueShade
+      z-index: 2
+
+    &__info
+      &__delivery
+        text-align: right!important
+        word-break: break-all
+        height: 22px
+        overflow: hidden
+    p
+      // letter-spacing: -0.02rem
+      width: 100%
+      margin-left: 0.5rem
+      position: relative
+      z-index: 3
+      text-align: center
+      .total-payment
+        font-size: 18px
+      .total-cost
+        font-size: 18px
+
+    .complete-payment-p
+      width: auto!important
+
+    .payment-completed-icon
+      z-index: 100!important
+
+  
+
+.others
+  margin-bottom: 3 * $margin
+
+// .empty-table
+//   height: calc(100vh - 365px)
+//   text-align: center
+//   display: flex
+//   justify-content: center
+//   align-content: center
+//   img
+//     width: 25%
+//     opacity: 0.5
+
+
+
+#pay-checkout
+  .pay-checkout-btn
+    color: white
+    display: flex
+    flex: 3
+    height: 100%
+    font-size: 16px
+    font-weight: 600!important
+    justify-content: center
+    align-items: center
+    border-radius: 0
+    span
+      font-size: 16px
+      font-weight: 500!important
+    .credit-card-icon
+      margin-inline-end: 3px
+  .pc-child
+    flex: 2
+    display: flex
+    align-items: center
+  .pay-checkout-info
+    // flex-direction: row-reverse
+    justify-content: flex-end
+    align-items: center
+    .total-count, .total-price
+      display: inline-block
+    .total-price
+      font-size: 18px
+      .toman
+        font-size: 14px
+        color: $grey
+        position: relative
+        right: 3px
+
+  .payment-method-message
+    display: flex
+    &__text
+      flex: 1
+    &__btn
+      .button
+        span
+          font-size: 13px!important
+.table-options-modal
+  .modal-card-body
+    .last-checkbox-field
+      padding-bottom: 2*$padding
+      // margin-bottom: $margin!important
+      .b-checkbox
+        .check
+          width: 1.4rem!important
+          height: 1.4rem!important
+        .control-label
+          padding-inline-start: 0.5rem
+          padding-inline-end: 0
+          font-size: 18px
+
+.pay-checkout-is-shown
+  box-shadow: 0px -1px 0px rgba(0,0 ,0 ,0.05)
+  bottom: 105px!important
+  transition: 0.3s!important
+  transition-timing-function: ease-out!important
+  transform: translateY(46px)!important
+  opacity: 1!important
+
+
+.no-active-table
+  position: absolute
+  top: 0
+  left: 0
+  right: 0
+  bottom: 65px
+  display: flex
+  justify-content: center
+  align-items: center
+  div
+    text-align: center
+    img
+      display: block
+      width: 50%
+      margin: auto
+      margin-bottom: $margin
+    p.no-ordering-text
+      display: inline-block
+      padding: $padding /2 $padding
+      background-color: $lightGrey
+      color: $grey
+      // width: 80%
+      margin: auto
+      border-radius: 5px
+
+@media screen and (max-width: 360px)
+  .table-top-section
+    div
+    &__name
+      h5
+        font-size: 15px!important
+        span
+          font-size: 15px!important

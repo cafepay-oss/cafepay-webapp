@@ -1,0 +1,68 @@
+.disable-profile-navigator
+  filter: saturate(0%)
+  color: lighten($grey, 20%)
+  img
+    opacity: 0.5
+  &::after
+    content: 'به زودی!'
+    position: absolute
+    left: $padding
+    font-weight: bold
+
+.profile-info-bar
+  display: flex
+  position: relative
+  bottom: 54px
+  // height: 60px.disable-profile-navigator
+
+  .info
+    flex: 1
+    height: 75px
+    img
+      width: 60px
+      height: 60px
+      position: relative
+      top: 8px
+      border-radius: 50px
+    & #profile-img
+      // border: 2px solid #e6e6e6
+    img.no-pic
+      border-radius: 0!important
+    .header
+      position: absolute
+      display: inline-block
+      font-size: 18px
+      font-weight: 500!important
+
+  .detail
+    position: absolute
+    display: inline-block
+    top: $margin * 3
+    font-size: 16px
+
+.staff-request
+  position: relative
+  .notif-num
+    width: 28px
+    height: 28px
+    position: absolute
+    left: $padding
+
+.profile-navigation
+  padding-bottom: 4*$padding
+.go-back
+  text-align: left
+
+.content-below-profile-bar
+  position: relative
+  bottom: $margin * 2
+
+.profile-noLogin
+  height: 100vh
+  display: flex
+  justify-content: center
+  align-items: center
+  button
+    span.icon
+      margin-inline-end: 0.5rem!important
+      margin-inline-start: 0rem!important

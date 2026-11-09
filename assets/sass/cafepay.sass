@@ -1,0 +1,436 @@
+
+@import 'variables.sass'
+@import 'cafeNavigator.sass'
+@import 'cafeMenu.sass'
+@import 'table.sass'
+@import  'product.sass'
+@import 'profile.sass'
+@import 'poll.sass'
+@import 'cafeInfo.sass'
+@import 'comments.sass'
+@import 'buefyCustomization.sass'
+@import  'post.sass'
+@import  'wallet.sass'
+@import  'profileInfo.sass'
+@import  'index.sass'
+@import  'scan.sass'
+@import  'loginModal.sass'
+@import  'liveorder.sass'
+@import  'table_preorderList.sass'
+@import  'table_preInvoice.sass'
+@import  'table_person.sass'
+@import  'contact.sass'
+@import  'orderHistory.sass'
+@import 'feed.sass'
+@import 'address.sass'
+
+@import './components/modal'
+@import './components/input'
+@import './components/map'
+@import './components/switch'
+@import './components/button'
+@import './components/tab'
+@import './components/toast'
+@import './components/slider'
+// @import './components/headerPattern.sass'
+// @import './components/headerPattern1.sass'
+@import './components/headerPattern2.sass'
+
+*
+  -webkit-tap-highlight-color: rgba(0,0,0,0)
+  -webkit-tap-highlight-color: transparent
+
+html
+  background-color: #f0f0f0!important
+body
+  background-color: #f0f0f0!important
+  width: 100%
+  max-width: 998px
+  min-height: 100vh
+  margin: auto
+img
+  max-width: 100%
+.user-home
+  padding-bottom: calc(65px + env(safe-area-inset-bottom, 0px))
+.navigation-container
+  // box-shadow: $navbarBoxShadow
+
+.font-ul
+  font-weight: 200!important
+
+.font-l
+  font-weight: 300!important
+
+.font-reg
+  font-weight: 400!important
+
+.font-norm
+  font-weight: 500!important
+
+.font-bold
+  font-weight: bold!important
+
+.btn-font-norm
+  span
+    font-weight: 500!important
+
+.btn-font-bold
+  span
+    font-weight: bold!important
+
+.font-24
+  font-size: 24px!important
+
+.font-22
+  font-size: 22px!important
+
+.font-20
+  font-size: 20px!important
+
+.font-18
+  font-size: 18px!important
+
+.font-16
+  font-size: 16px!important
+
+.font-14
+  font-size: 14px!important
+
+.font-12
+  font-size: 12px!important
+
+.font-10
+  font-size: 10px!important
+
+h1
+  font-weight: 400
+
+.flex
+  display: flex
+
+.t-xxlarge
+  font-size: 48px
+
+.t-xlarge, h1
+  font-size: 36px
+
+.t-large, h2
+  font-size: 24px
+
+.t-medium, h3
+  font-size: 18px
+
+.t-small
+  font-weight: 13px
+
+.t-white
+  color: white
+
+.center-align
+  text-align: center!important
+
+.left-align
+  text-align: left!important
+
+.right-align
+  text-align: right!important
+
+.p-text
+  color: $primary
+
+.primary
+  background-color: $primary
+
+.secondary
+  background-color: $secondary
+
+.s-text
+  color: $secondary
+
+.lightblue
+  background-color: $lightblue!important
+
+.t-lightblue
+  color: $lightblue!important
+
+.t-text
+  color: $thirdinary!important
+
+.thirdinary
+  background-color: $thirdinary!important
+
+.g-text
+  color: $green!important
+
+.green
+  background-color: $green!important
+
+.purple
+  background-color: $purple!important
+
+.purple-text
+  color: $purple!important
+
+.grey-text
+  color: $grey!important
+
+.white-text
+  color: white!important
+
+.postfix-margin
+  margin-inline-start: 3px
+
+.cp-header
+  // background: rgb(0,113,188)
+  width: 100%
+  height: 140px
+
+.cp-full-width
+  width: 100%
+
+.long-shadow
+  box-shadow: $longShadow!important
+.short-shadow
+  box-shadow: $shortShadow!important
+
+.normal-radius
+  border-radius: 5px
+
+.header-radius
+  border-radius: 10px
+
+.modal
+  z-index: 140
+
+// Cafe navigator TAB --------------------------------------------------
+
+  // PADDING SECTION -------------------------------------------------
+
+.cp-side-padding
+  @include sidePadding($size: $padding)
+
+.cp-tb-padding
+  @include tbPadding($size: $padding)
+
+.cp-side-padding-2x
+  @include sidePadding($size: 2 * $padding)
+
+.cp-tb-padding-2x
+  @include tbPadding($size: 2 * $padding)
+
+.cp-side-padding-4x
+  @include sidePadding($size: 4 * $padding)
+
+.cp-tb-padding-4x
+  @include tbPadding($size: 4 * $padding)
+
+.cp-side-padding-half
+  @include sidePadding($size: 0.5 * $padding)
+
+.cp-tb-padding-half
+  @include tbPadding($size: 0.5 * $padding)
+
+.cp-padding
+  padding: $padding!important
+
+.cp-padding-2x
+  padding: 2 * $padding!important
+
+// MARGIN SECTION --------------------------------------------------------
+
+
+.cp-margin
+  margin: $margin!important
+
+.cp-side-margin
+  @include sideMargin($size: $margin)
+
+.cp-tb-margin
+  @include tbMargin($size: $margin)
+
+.cp-side-margin-2x
+  @include sideMargin($size: 2 * $margin)
+
+.cp-tb-margin-2x
+  @include tbMargin($size: 2 * $margin)
+
+.cp-side-margin-half
+  @include sideMargin($size: 0.5 * $margin)
+
+.cp-tb-margin-half
+  @include tbMargin($size: 0.5 * $margin)
+
+.cp-b-margin
+  margin-bottom: $margin!important
+
+.cp-b-margin-half
+  margin-bottom: $margin * 0.5!important
+
+.cp-b-margin-2x
+  margin-bottom: $margin * 2!important
+
+.cp-t-margin
+  margin-top: $margin!important
+
+.cp-r-margin
+  margin-right: $margin
+
+.cp-l-margin
+  margin-left: $margin
+
+.cp-r-margin-half
+  margin-right: $margin / 2
+
+.cp-l-margin-half
+  margin-left: $margin / 2
+
+.cp-r-margin-inverted
+  margin-right: $margin * -1
+
+.cp-l-margin-inverted
+  margin-left: $margin * -1
+
+.cp-t-margin-2x
+  margin-top: $margin * 2!important
+
+.ml-zero
+  margin-inline-end: 0!important
+
+.mr-zero
+  margin-inline-start: 0!important
+
+.mt-zero
+  margin-top: 0!important
+
+.mb-zero
+  margin-bottom: 0!important
+
+.btn
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,.1),0 1px 2px 0 rgba(0,0,0,.06)!important
+  // border-width: 1px!important
+  // border-radius: .25rem!important
+  // border-color: #cbd5e0!important
+
+.cp-header-card
+  border-radius: 10px
+
+.cp-card
+  border-radius: 5px
+
+.toman
+  color: $grey
+  position: relative
+  right: 2px
+
+.order-fix-button
+  max-width: 998px
+  margin-inline: auto
+  position: fixed
+  left: 0
+  right: 0
+  bottom: 0
+  height: 50px
+  box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.15)
+  display: flex
+  justify-content: center
+  align-items: center
+
+.notif-num
+  color: white
+  border-radius: 100px
+  display: flex
+  justify-content: center
+  align-items: center
+  font-weight: 600!important
+
+html
+  -webkit-overflow-scrolling: touch
+  overflow-scrolling: touch
+
+.message-warning
+  background-color: #ffe78a;
+  border-radius: $border
+  width: 100%
+  display: flex
+  justify-content: center
+  align-items: center
+  padding: $margin/2 $margin
+
+
+.fade-enter-active, .fade-leave-active 
+  transition: opacity .5s
+
+.fade-enter, .fade-leave-to
+  opacity: 0
+
+  
+//  shadows
+.shadow-b
+  box-shadow: 0 3px 6px -1px rgba(0, 0, 0, 0.12), 0 1px 4px -1px rgba(0, 0, 0, 0.07)!important
+.shadow-xs  
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05)!important
+.shadow-sm  
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05)!important
+.shadow  
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)!important
+.shadow-md  
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)!important
+
+.shadow-md-b
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.12)!important
+
+.shadow-lg  
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)!important
+.shadow-lg-b
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1) !important
+
+.shadow-lg-bb
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15) !important
+  
+.shadow-xl  
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)!important
+.shadow-2xl  
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25)!important
+.shadow-inner  
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)!important
+.shadow-outline  
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5)
+.shadow-none  
+  box-shadow: none
+
+.shadow-newm
+  box-shadow: 5px 5px 6px -1px rgba(0, 0, 0, 0.1), -3px -2px 15px 0px rgba(255, 255, 255, 0.4), inset 0 2px 4px 0 rgba(0, 0, 0, 0.06) !important
+
+.v-tour 
+  .v-step
+    background-color: #ffffff!important
+    color: $black!important
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)!important
+    border-radius: $border-md!important
+    filter: none!important
+    &__content
+      text-align: start
+    &__buttons
+      text-align: end
+    &__button
+      font-size: 15px!important
+      background-color: $thirdinary!important
+      border: none!important
+      border-radius: $border!important
+      color: white!important
+      padding: $padding/2 $padding !important
+      // height: auto!important
+      // line-height: normal!important
+    &__arrow
+      border-top-color: white!important
+      border-left-color: transparent
+      border-right-color: transparent
+      border-bottom-color: transparent
+  &__target
+    &--highlighted
+      box-shadow: 0 0 0 99999px rgba(0,0,0,.4)!important
+
+
+
+a.dropdown-item, .dropdown .dropdown-menu .has-link a, button.dropdown-item 
+  text-align: right

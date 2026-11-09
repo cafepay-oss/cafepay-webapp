@@ -1,0 +1,7 @@
+@import "../vazirmatn.css";
+
+*:not(i) {
+  font-family: "Vazirmatn", sans-serif !important;
+  font-weight: 400 !important;
+  font-size: 15px;
+}
